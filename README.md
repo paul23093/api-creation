@@ -1,7 +1,17 @@
-# api_creation
-build test api
+# api-creation
+### Repository for test API building
 
-**Some new staff**
+**api_data**
 
-* Test_1
-* Test_2
+### GET
+
+* /devices
+
+### POST
+
+* /device
+
+* identifier
+* name
+* device_type
+* controller_gateway
