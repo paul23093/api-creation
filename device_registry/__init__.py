@@ -1,6 +1,8 @@
 import markdown
 import os
 import shelve
+import pymysql
+import logging
 
 from flask import Flask, g
 from flask_restful import Resource, Api, reqparse
@@ -33,15 +35,27 @@ def index():
 
 class DeviceList(Resource):
 	def get(self):
-		shelf = get_db()
-		keys = [shelf.keys()]
+		con = pymysql.connect(host='172.17.0.1', port=6603, user='root', password='root', db='test')
+		cur = con.cursor()
 
-		devices = []
+		q = f'''
 
-		for key in devices:
-			devices.append(shelf[key])
+		select *
+		from devices
 
-		return {'message': 'Success', 'data': devices}
+		'''
+
+		count = cur.execute(q)
+
+		columns = [el[0] for el in cur.description]
+		row = cur.fetchall()
+
+		data = [{columns[i]: row[j][i] for i in range(len(columns))} for j in range(count)]
+
+		cur.close()
+		con.close()
+
+		return {'message': 'Success', 'data': data}
 
 	def post(self):
 		parser = reqparse.RequestParser()
@@ -53,19 +67,52 @@ class DeviceList(Resource):
 
 		args = parser.parse_args()
 
-		shelf = get_db()
-		shelf[args['identifier']] = args
+		con = pymysql.connect(host='172.17.0.1', port=6603, user='root', password='root', db='test')
+		cur = con.cursor()
+
+		q = f'''
+
+		insert into devices
+		values ({int(args['identifier'])}, '{args['name']}', '{args['device_type']}', '{args['controller_gateway']}')
+
+		'''
+		cur.execute(q)
+		cur.fetchall()
+
+		cur.close()
+		con.commit()
+		con.close()
 
 		return {'message': 'Device registered', 'data': args}, 201
 
 class Device(Resource):
 	def get(self, identifier):
-		shelf = get_db()
 
-		if not (identifier in shelf):
+		con = pymysql.connect(host='172.17.0.1', port=6603, user='root', password='root', db='test')
+		cur = con.cursor()
+
+		q = f'''
+
+		select *
+		from devices
+		where id = {identifier}
+
+		'''
+
+		count = cur.execute(q)
+
+		columns = [el[0] for el in cur.description]
+		row = cur.fetchall()
+
+		data = {columns[i]: row[0][i] for i in range(len(columns))}
+
+		cur.close()
+		con.close()
+
+		if count == 0:
 			return {'message': 'Device not found', 'data': {}}, 404
 
-		return {'message': 'Device found', 'data': shelf[identifier]}, 200
+		return {'message': 'Device found', 'data': data}, 200
 
 	def delete(self, identifier):
 		shelf = get_db()
@@ -77,4 +124,4 @@ class Device(Resource):
 		return '', 204
 
 api.add_resource(DeviceList, '/devices')
-api.add_resource(Device, '/device/<string:identifier>')
+api.add_resource(Device, '/device/<int:identifier>')

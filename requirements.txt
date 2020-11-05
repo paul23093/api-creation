@@ -1,3 +1,5 @@
 Flask==0.12.2
 flask-restful==0.3.6
 markdown==2.6.11
+mysql-connector-python==8.0.22
+pymysql==0.10.1

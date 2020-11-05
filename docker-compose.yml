@@ -7,3 +7,21 @@ services:
       - .:/usr/src/app
     ports:
       - 5000:80
+
+  # mysql:
+  #   container_name: mysql-test
+  #   image: latest
+  #   restart: always
+  #   environment:
+  #     MYSQL_DATABASE: 'test'
+  #     MYSQL_USER: 'root'
+  #     MYSQL_PASSWORD: 'root'
+  #     MYSQL_ROOT_PASSWORD: 'root'
+  #   ports:
+  #     - '6603:3306'
+  #   expose:
+  #     - '6603'
+  #   volumes:
+  #     - .:/var/lib/mysql
+  #   networks:
+  #     - general
