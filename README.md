@@ -10,8 +10,7 @@
 ### POST
 
 * /device
-
-* identifier
-* name
-* device_type
-* controller_gateway
+  * identifier
+  * name
+  * device_type
+  * controller_gateway
