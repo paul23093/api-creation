@@ -6,6 +6,7 @@
 ### GET
 
 * /devices
+* /device/{identifier}
 
 ### POST
 
